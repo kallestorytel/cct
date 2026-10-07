@@ -50,4 +50,3 @@ Hook errors go to `hook.log` in the state directory's parent (default `~/.cct/ho
 
 - Ghostty only.
 - Focusing a busy session can take a few tries internally, because Claude's spinner keeps rewriting the tab title.
-- A finished session clears automatically if its tab is focused in the frontmost Ghostty window.
