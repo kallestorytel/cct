@@ -87,11 +87,6 @@ sessions() {
     | [.session_id, .status, (.cwd | split("/") | last), (.prompt // ""), .updated, $monitoring] | @tsv'
 }
 
-# SwiftBar only colors an sfimage through sfconfig: base64 JSON with a rendering mode and colors.
-sf_color() {
-  printf '{"renderingMode":"Palette","colors":["%s"],"scale":"medium"}' "$1" | base64
-}
-
 render() {
   local rows attention
   rows="$(sessions)"
@@ -120,7 +115,8 @@ render() {
     esac
     label="$status $(age "$updated")"
     [ "$monitoring" = "true" ] && label="$label  ·  monitoring"
-    echo "$repo  ·  $label | sfimage=$icon sfconfig=$(sf_color "$color") bash=$FOCUS param1=$sid terminal=false"
+    # An inline :symbol: keeps its sfcolor in every menu state; sfimage tints get dimmed by macOS.
+    echo ":$icon: $repo  ·  $label | sfcolor=$color bash=$FOCUS param1=$sid terminal=false"
     [ -n "$prompt" ] && echo "-- ${prompt//|/¦} | size=11 color=gray"
   done <<<"$rows"
 }
