@@ -35,7 +35,8 @@ write_hooks() {
     def ours: [
       {event: "SessionStart",     entry: entry("start";  true)},
       {event: "UserPromptSubmit", entry: entry("prompt"; true)},
-      {event: "PostToolUse",      entry: entry("tool";   true)},
+      # Sync, so a late tool hook can never land after Stop and undo "done".
+      {event: "PostToolUse",      entry: entry("tool";   false)},
       {event: "Notification",     entry: entry("notify"; true)},
       {event: "Stop",             entry: entry("stop";   true)},
       {event: "SessionEnd",       entry: entry("end";    false)}

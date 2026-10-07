@@ -69,8 +69,9 @@ case "$event" in
       '. + {status: "busy", prompt: $prompt, updated: $now}'
     ;;
   tool)
-    # A tool ran, so any permission prompt was answered. Only write when it changes something.
-    [ "$(current_status)" = "waiting" ] && update_state '. + {status: "busy", updated: $now}'
+    # A tool ran, so Claude is working: it answered a permission prompt, or a turn started without
+    # a prompt (monitor event, background task). Only write when it changes something.
+    [ "$(current_status)" != "busy" ] && update_state '. + {status: "busy", updated: $now}'
     ;;
   notify)
     case "$(jq -r '.notification_type // empty' <<<"$input")" in
