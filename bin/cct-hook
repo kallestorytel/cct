@@ -3,6 +3,10 @@
 # Usage (from settings.json): cct-hook <start|prompt|tool|notify|stop|end>
 set -euo pipefail
 
+# Only Ghostty tabs can be focused. Sessions in other terminals (VS Code, iTerm, …) are ignored.
+# Hooks inherit Claude Code's environment, which inherits it from the terminal.
+[ "${TERM_PROGRAM:-}" = "ghostty" ] || exit 0
+
 STATE_DIR="${CCT_STATE_DIR:-$HOME/.cct/sessions}"
 mkdir -p "$STATE_DIR"
 # Claude Code ignores stderr from async hooks, so keep it somewhere we can read it.

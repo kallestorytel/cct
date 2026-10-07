@@ -296,7 +296,8 @@ The terminal id is cached for later.
 
 ## Limitations
 
-- **Ghostty only.** Other terminals aren't supported.
+- **Ghostty only.** Sessions in other terminals, such as VS Code or iTerm, are ignored. The hook checks `TERM_PROGRAM`, which Ghostty sets to `ghostty`.
+- **No tmux.** tmux sets `TERM_PROGRAM` to `tmux`, so sessions inside it are ignored. cct couldn't find their tab anyway. Other multiplexers are untested.
 - **"monitoring" is a heuristic.** Claude Code has no hook for background tasks. cct looks for shell processes that `claude` started, so a long background command shows up the same way as a Monitor watch.
 - **Finding a busy session's tab can take a moment.** Claude's spinner keeps rewriting the tab title, so cct-probe may need a few tries.
 - **Interrupted turns.** If you interrupt Claude with Esc, the `Stop` hook may not fire. The session then shows as busy until Claude Code's idle notification arrives.
