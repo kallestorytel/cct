@@ -46,7 +46,7 @@ record_identity() {
   local found pid tty
   found="$(find_claude_process)" || exit 1
   read -r pid tty <<<"$found"
-  update_state --arg sid "$session_id" --arg cwd "$(jq -r .cwd <<<"$input")" \
+  update_state --arg sid "$session_id" --arg cwd "$(jq -r --arg pwd "$PWD" '.cwd // $pwd' <<<"$input")" \
     --argjson pid "$pid" --arg tty "$tty" \
     '. + {session_id: $sid, cwd: $cwd, pid: $pid, tty: $tty, updated: $now}'
 }
