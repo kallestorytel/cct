@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>cct — Claude Code sessions</xbar.title>
-# <xbar.desc>Lists Claude Code sessions in Ghostty and pulses when one needs you.</xbar.desc>
+# <xbar.desc>Lists Claude Code sessions in Ghostty and shows which ones need you.</xbar.desc>
 # <xbar.dependencies>jq,ghostty</xbar.dependencies>
 # <swiftbar.type>streamable</swiftbar.type>
 # <swiftbar.hideAbout>true</swiftbar.hideAbout>
@@ -15,6 +15,18 @@ BIN="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)/bin"
 FOCUS="$BIN/cct-focus"
 TICK=0.6
 mkdir -p "$STATE_DIR"
+
+# Icons are SF Symbol names; colors are hex. Override any of these in ~/.cct/config.
+ICON_IDLE=bubble.left.and.text.bubble.right
+ICON_WAITING=exclamationmark.bubble.fill
+ICON_DONE=checkmark.bubble.fill
+COLOR_WAITING=#FF9500
+COLOR_DONE=#34C759
+COLOR_BUSY=#0A84FF
+COLOR_IDLE=#8E8E93
+CONFIG="${CCT_CONFIG:-$HOME/.cct/config}"
+# shellcheck source=/dev/null
+[ -f "$CONFIG" ] && source "$CONFIG"
 
 age() {
   local s=$(( $(date +%s) - $1 ))
@@ -70,20 +82,18 @@ sessions() {
 }
 
 render() {
-  local frame=$1 rows waiting done
+  local rows waiting done
   rows="$(sessions)"
   waiting="$(grep -c $'\twaiting\t' <<<"$rows")"
   done="$(grep -c $'\tdone\t' <<<"$rows")"
 
   echo "~~~"
   if [ "$waiting" -gt 0 ]; then
-    [ $((frame % 2)) -eq 0 ] && echo "$waiting | sfimage=exclamationmark.bubble.fill sfcolor=#FF9500" \
-                             || echo "$waiting | sfimage=exclamationmark.bubble"
+    echo "$waiting | sfimage=$ICON_WAITING sfcolor=$COLOR_WAITING"
   elif [ "$done" -gt 0 ]; then
-    [ $((frame % 2)) -eq 0 ] && echo "$done | sfimage=checkmark.bubble.fill sfcolor=#34C759" \
-                             || echo "$done | sfimage=checkmark.bubble"
+    echo "$done | sfimage=$ICON_DONE sfcolor=$COLOR_DONE"
   else
-    echo " | sfimage=bubble.left.and.text.bubble.right"
+    echo " | sfimage=$ICON_IDLE"
   fi
   echo "---"
 
@@ -94,27 +104,25 @@ render() {
   local sid status repo prompt updated icon color
   while IFS=$'\t' read -r sid status repo prompt updated; do
     case "$status" in
-      waiting) icon=exclamationmark.bubble.fill; color=#FF9500 ;;
-      done)    icon=checkmark.circle.fill;       color=#34C759 ;;
-      busy)    icon=ellipsis.circle;             color=#0A84FF ;;
-      *)       icon=circle;                      color=#8E8E93 ;;
+      waiting) icon=exclamationmark.bubble.fill; color=$COLOR_WAITING ;;
+      done)    icon=checkmark.circle.fill;       color=$COLOR_DONE ;;
+      busy)    icon=ellipsis.circle;             color=$COLOR_BUSY ;;
+      *)       icon=circle;                      color=$COLOR_IDLE ;;
     esac
     echo "$repo  ·  $status $(age "$updated") | sfimage=$icon sfcolor=$color bash=$FOCUS param1=$sid terminal=false"
     [ -n "$prompt" ] && echo "-- ${prompt//|/¦} | size=11 color=gray"
   done <<<"$rows"
 }
 
-frame=0
 last=""
 while true; do
   prune
   clear_seen
-  out="$(render "$frame")"
+  out="$(render)"
   # Only redraw on change, so an open menu doesn't flicker.
   if [ "$out" != "$last" ]; then
     echo "$out"
     last="$out"
   fi
-  frame=$((frame + 1))
   sleep "$TICK"
 done

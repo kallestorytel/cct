@@ -27,11 +27,30 @@ Sessions that were already running show up after their next prompt.
 
 | Icon | Meaning |
 |---|---|
-| Orange, pulsing ❗ | A session is waiting for you (permission prompt or question) |
-| Green, pulsing ✓ | A session finished and you haven't looked at it yet |
+| Orange ❗ + count | A session is waiting for you (permission prompt or question) |
+| Green ✓ + count | A session finished and you haven't looked at it yet |
 | Plain bubbles | Nothing needs you |
 
+The icon is a status indicator. It never blinks or animates.
+
 A finished session counts as seen once you focus its tab, through the menu or by hand.
+
+## Customizing
+
+Create `~/.cct/config` and override any of these. Icons are [SF Symbol](https://developer.apple.com/sf-symbols/) names; browse them with `brew install --cask sf-symbols`.
+
+```bash
+ICON_IDLE=bubble.left.and.text.bubble.right
+ICON_WAITING=exclamationmark.bubble.fill
+ICON_DONE=checkmark.bubble.fill
+COLOR_WAITING=#FF9500
+COLOR_DONE=#34C759
+COLOR_BUSY=#0A84FF
+COLOR_IDLE=#8E8E93
+```
+
+Changes apply after `open -g swiftbar://refreshallplugins` or a SwiftBar restart.
+Set `CCT_CONFIG` to use a different file.
 
 ## How it works
 
