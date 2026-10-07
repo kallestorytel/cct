@@ -17,9 +17,9 @@ TICK=0.6
 mkdir -p "$STATE_DIR"
 
 # Icons are SF Symbol names; colors are hex. Override any of these in ~/.cct/config.
-ICON_IDLE=bubble.left.and.text.bubble.right
-ICON_WAITING=exclamationmark.bubble.fill
-ICON_DONE=checkmark.bubble.fill
+ICON_IDLE=ipod.shuffle.gen1
+ICON_WAITING=ipod.shuffle.gen1
+ICON_DONE=ipod.shuffle.gen1
 COLOR_WAITING=#FF9500
 COLOR_DONE=#34C759
 COLOR_BUSY=#0A84FF
