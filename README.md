@@ -24,6 +24,7 @@ The icon is a status indicator. It never blinks or animates.
 - [Troubleshooting](#troubleshooting)
 - [How it works](#how-it-works)
 - [Limitations](#limitations)
+- [Feedback](#feedback)
 
 ## Requirements
 
@@ -301,3 +302,20 @@ The terminal id is cached for later.
 - **"monitoring" is a heuristic.** Claude Code has no hook for background tasks. cct looks for shell processes that `claude` started, so a long background command shows up the same way as a Monitor watch.
 - **Finding a busy session's tab can take a moment.** Claude's spinner keeps rewriting the tab title, so cct-probe may need a few tries.
 - **Interrupted turns.** If you interrupt Claude with Esc, the `Stop` hook may not fire. The session then shows as busy until Claude Code's idle notification arrives.
+
+## Feedback
+
+Bugs, ideas and questions go in [GitHub issues](https://github.com/kallestorytel/cct/issues).
+
+For a bug, include:
+
+- what you did, what you expected and what happened instead,
+- the output of this command:
+
+```bash
+git -C ~/code/cct describe --tags
+sw_vers -productVersion; ghostty +version | head -1; claude --version; jq --version
+tail -20 ~/.cct/hook.log
+```
+
+Adjust `~/code/cct` if you cloned the repo somewhere else.
