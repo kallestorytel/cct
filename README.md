@@ -3,6 +3,10 @@
 Running many Claude Code sessions as Ghostty tabs makes it hard to tell which one needs you.
 cct puts a small icon in the macOS menu bar that keeps track for you.
 
+<p align="center">
+  <img src="docs/menu.svg" width="440" alt="The cct menu bar icon with a count of 2, and its dropdown listing four sessions: waiting, done and monitoring, busy, and idle">
+</p>
+
 - The number next to the icon counts sessions that need you.
 - The dropdown lists every session with its status, project and last prompt.
 - Click a session to jump to its Ghostty tab.

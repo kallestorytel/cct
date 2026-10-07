@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" viewBox="0 0 520 424" role="img" aria-label="cct menu bar icon with a count of 2, and a dropdown listing four Claude Code sessions: waiting, done and monitoring, busy, and idle">
+  <defs>
+    <linearGradient id="bar" x1="0" x2="1">
+      <stop offset="0" stop-color="#7a4f33"/>
+      <stop offset="1" stop-color="#9c6b47"/>
+    </linearGradient>
+    <mask id="moon">
+      <rect width="520" height="60" fill="#fff"/>
+      <circle cx="320" cy="25" r="10" fill="#000"/>
+    </mask>
+    <mask id="half">
+      <rect x="250" y="0" width="12" height="60" fill="#fff"/>
+    </mask>
+  </defs>
+
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 22px; fill: #ebe7e3; }
+    .dim { fill: #b9b3ad; }
+  </style>
+
+  <!-- Menu bar -->
+  <rect width="520" height="60" fill="url(#bar)"/>
+  <rect x="2" y="6" width="74" height="48" rx="12" fill="#ffffff" fill-opacity="0.22"/>
+  <!-- iPod shuffle (gen 1) -->
+  <rect x="13" y="16" width="15" height="28" rx="4" fill="none" stroke="#fff" stroke-width="2.4"/>
+  <circle cx="20.5" cy="24.5" r="3.4" fill="none" stroke="#fff" stroke-width="2"/>
+  <text x="38" y="38" style="fill:#fff">2</text>
+  <!-- Other menu bar icons, simplified -->
+  <g fill="#fff">
+    <path d="M152 30 l-14 -12 l-3 3 l12 9 l-12 9 l3 3 z M150 30 l14 -12 l3 3 l-12 9 l12 9 l-3 3 z" fill-opacity="0.9"/>
+    <rect x="196" y="16" width="30" height="28" rx="6" fill="#3a3dbf"/>
+    <path d="M204 26 h12 l-3 -3 M218 34 h-12 l3 3" stroke="#ff5fa2" stroke-width="2.4" fill="none"/>
+    <circle cx="262" cy="30" r="12" fill="none" stroke="#fff" stroke-width="2.4"/>
+    <circle cx="262" cy="30" r="12" mask="url(#half)"/>
+    <circle cx="312" cy="30" r="12" mask="url(#moon)"/>
+    <path d="M366 24 h6 l8 -7 v26 l-8 -7 h-6 z"/>
+    <path d="M386 23 q5 7 0 14 M391 19 q9 11 0 22" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M444 22 l14 14 l-7 6 v-24 l7 6 l-14 14" stroke="#fff" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Dropdown panel -->
+  <rect x="8" y="66" width="496" height="352" rx="14" fill="#2c2825" stroke="#4d4743" stroke-width="1.5"/>
+
+  <!-- waiting: exclamationmark.bubble.fill, orange -->
+  <path d="M17 92 a11 10 0 1 1 6 9 l-6 3 l1.5 -5.5 a10 10 0 0 1 -1.5 -6.5 z" fill="#FF9500"/>
+  <rect x="26.6" y="85" width="2.8" height="8" rx="1.4" fill="#2c2825"/>
+  <circle cx="28" cy="97" r="1.6" fill="#2c2825"/>
+  <text x="58" y="100">web-app  ·  waiting 12s</text>
+
+  <!-- done: checkmark.circle.fill, green -->
+  <circle cx="28" cy="140" r="11" fill="#34C759"/>
+  <path d="M22.5 140.5 l3.8 3.8 l7.2 -7.6" stroke="#2c2825" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="58" y="148">cct  ·  done 7s  ·  monitoring</text>
+
+  <!-- busy: ellipsis.circle, blue -->
+  <circle cx="28" cy="188" r="10.5" fill="none" stroke="#0A84FF" stroke-width="2"/>
+  <g fill="#0A84FF"><circle cx="23" cy="188" r="1.8"/><circle cx="28" cy="188" r="1.8"/><circle cx="33" cy="188" r="1.8"/></g>
+  <text x="58" y="196">api-gateway  ·  busy 20s</text>
+
+  <!-- idle: circle, grey -->
+  <circle cx="28" cy="236" r="10.5" fill="none" stroke="#8E8E93" stroke-width="2"/>
+  <text x="58" y="244">dotfiles  ·  idle 38m</text>
+
+  <!-- Submenu chevrons (each row holds the session's last prompt) -->
+  <g stroke="#ebe7e3" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M461 87 l6 6 l-6 6"/>
+    <path d="M461 135 l6 6 l-6 6"/>
+    <path d="M461 183 l6 6 l-6 6"/>
+    <path d="M461 231 l6 6 l-6 6"/>
+    <path d="M461 312 l6 6 l-6 6"/>
+  </g>
+
+  <line x1="20" y1="274" x2="492" y2="274" stroke="#4d4743" stroke-width="1.5"/>
+
+  <!-- SwiftBar -->
+  <rect x="17" y="305" width="26" height="26" rx="6" fill="#1f3a2b" stroke="#3d6b50"/>
+  <text x="20" y="325" style="font-size:16px;font-weight:700;fill:#5fd38d">$</text>
+  <rect x="33" y="311" width="5" height="14" rx="1" fill="#5fd38d"/>
+  <text x="66" y="326">SwiftBar</text>
+
+  <line x1="20" y1="354" x2="492" y2="354" stroke="#4d4743" stroke-width="1.5"/>
+
+  <text x="18" y="394">Disable Plugin</text>
+</svg>
