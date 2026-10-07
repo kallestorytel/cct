@@ -105,7 +105,7 @@ claude --version
 ## Install cct
 
 ```bash
-git clone <repo-url> ~/code/cct
+git clone git@github.com:kallestorytel/cct.git ~/code/cct
 cd ~/code/cct
 ./install.sh
 ```
