@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# <xbar.title>cct — Claude Code sessions</xbar.title>
+# <xbar.title>cct — Claude Code Tracker</xbar.title>
+# <xbar.version>v1.0.0</xbar.version>
+# <xbar.author>Kalle Asad-Lundgren</xbar.author>
+# <xbar.author.github>kallestorytel</xbar.author.github>
 # <xbar.desc>Lists Claude Code sessions in Ghostty and shows which ones need you or are monitoring.</xbar.desc>
-# <xbar.dependencies>jq,ghostty</xbar.dependencies>
+# <xbar.dependencies>jq,ghostty,claude</xbar.dependencies>
+# <xbar.abouturl>https://github.com/kallestorytel/cct</xbar.abouturl>
 # <swiftbar.type>streamable</swiftbar.type>
 # <swiftbar.hideAbout>true</swiftbar.hideAbout>
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
