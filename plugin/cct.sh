@@ -11,7 +11,8 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 STATE_DIR="${CCT_STATE_DIR:-$HOME/.cct/sessions}"
 # Resolve the symlink SwiftBar loads us through, to find bin/ in the repo.
-FOCUS="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)/bin/cct-focus"
+BIN="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)/bin"
+FOCUS="$BIN/cct-focus"
 TICK=0.6
 mkdir -p "$STATE_DIR"
 
@@ -32,6 +33,30 @@ prune() {
     # No pid yet means a hook is still recording identity. Leave it; sessions() skips it.
     [ -n "$pid" ] || continue
     kill -0 "$pid" 2>/dev/null || rm -f "$f"
+  done
+}
+
+# Ghostty's focused terminal id, or nothing when Ghostty isn't the frontmost app.
+focused_terminal() {
+  osascript -e 'tell application "Ghostty"
+    if not frontmost then return ""
+    return id of focused terminal of selected tab of front window
+  end tell' 2>/dev/null
+}
+
+# A finished session you're already looking at needs no attention: mark it idle.
+clear_seen() {
+  local f sid focused
+  # Only ask Ghostty when there's something to clear.
+  grep -lq '"status": *"done"' "$STATE_DIR"/*.json 2>/dev/null || return 0
+  focused="$(focused_terminal)"
+  [ -n "$focused" ] || return 0
+  for f in "$STATE_DIR"/*.json; do
+    [ "$(jq -r '.status // empty' "$f" 2>/dev/null)" = "done" ] || continue
+    sid="$(jq -r .session_id "$f")"
+    if [ "$("$BIN/cct-probe" "$sid" 2>/dev/null)" = "$focused" ]; then
+      jq 'if .status == "done" then .status = "idle" else . end' "$f" > "$f.$$.tmp" && mv "$f.$$.tmp" "$f"
+    fi
   done
 }
 
@@ -83,6 +108,7 @@ frame=0
 last=""
 while true; do
   prune
+  clear_seen
   out="$(render "$frame")"
   # Only redraw on change, so an open menu doesn't flicker.
   if [ "$out" != "$last" ]; then

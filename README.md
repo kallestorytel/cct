@@ -31,7 +31,7 @@ Sessions that were already running show up after their next prompt.
 | Green, pulsing ✓ | A session finished and you haven't looked at it yet |
 | Plain bubbles | Nothing needs you |
 
-Focusing a finished session through the menu marks it as seen.
+A finished session counts as seen once you focus its tab, through the menu or by hand.
 
 ## How it works
 
@@ -50,4 +50,4 @@ Hook errors go to `hook.log` in the state directory's parent (default `~/.cct/ho
 
 - Ghostty only.
 - Focusing a busy session can take a few tries internally, because Claude's spinner keeps rewriting the tab title.
-- Finishing a turn while you're looking at the tab still counts as "done" until you focus it through the menu.
+- A finished session clears automatically if its tab is focused in the frontmost Ghostty window.

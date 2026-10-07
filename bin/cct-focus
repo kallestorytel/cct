@@ -7,35 +7,8 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 STATE_DIR="${CCT_STATE_DIR:-$HOME/.cct/sessions}"
 session_id="${1:?usage: cct-focus <session_id>}"
 state_file="$STATE_DIR/$session_id.json"
-[ -f "$state_file" ] || { echo "cct-focus: no state for session $session_id" >&2; exit 1; }
 
-tty="$(jq -r .tty "$state_file")"
-terminal_id="$(jq -r '.terminal_id // empty' "$state_file")"
-
-terminal_exists() {
-  [ "$(osascript -e "tell application \"Ghostty\" to exists terminal id \"$1\"")" = "true" ]
-}
-
-# Ghostty doesn't expose a terminal's TTY. Set a unique title on the TTY and ask Ghostty which
-# terminal has it. A busy session redraws its title quickly, so retry a few times.
-probe_terminal_id() {
-  local marker="cct-probe-$$-$RANDOM" attempt found
-  for attempt in 1 2 3 4 5 6; do
-    printf '\033]2;%s\007' "$marker" > "$tty"
-    sleep 0.1
-    found="$(osascript -e "tell application \"Ghostty\" to get id of every terminal whose name is \"$marker\"")"
-    if [ -n "$found" ]; then
-      echo "$found"
-      return
-    fi
-  done
-  echo "cct-focus: could not find the Ghostty terminal for $tty after $attempt attempts" >&2
-  return 1
-}
-
-if [ -z "$terminal_id" ] || ! terminal_exists "$terminal_id"; then
-  terminal_id="$(probe_terminal_id)"
-fi
+terminal_id="$("$(dirname "$0")/cct-probe" "$session_id")"
 
 osascript -e "tell application \"Ghostty\"
   focus terminal id \"$terminal_id\"
@@ -43,7 +16,5 @@ osascript -e "tell application \"Ghostty\"
 end tell" > /dev/null
 
 # Seen: a finished session becomes plain idle.
-jq --arg tid "$terminal_id" \
-  '. + {terminal_id: $tid} | if .status == "done" then .status = "idle" else . end' \
-  "$state_file" > "$state_file.tmp"
-mv "$state_file.tmp" "$state_file"
+jq 'if .status == "done" then .status = "idle" else . end' "$state_file" > "$state_file.$$.tmp"
+mv "$state_file.$$.tmp" "$state_file"

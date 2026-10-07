@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Print the Ghostty terminal id of a Claude session, caching it in the state file.
+# Usage: cct-probe <session_id>
+set -euo pipefail
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+STATE_DIR="${CCT_STATE_DIR:-$HOME/.cct/sessions}"
+session_id="${1:?usage: cct-probe <session_id>}"
+state_file="$STATE_DIR/$session_id.json"
+[ -f "$state_file" ] || { echo "cct-probe: no state for session $session_id" >&2; exit 1; }
+
+tty="$(jq -r .tty "$state_file")"
+terminal_id="$(jq -r '.terminal_id // empty' "$state_file")"
+
+if [ -n "$terminal_id" ] &&
+   [ "$(osascript -e "tell application \"Ghostty\" to exists terminal id \"$terminal_id\"")" = "true" ]; then
+  echo "$terminal_id"
+  exit 0
+fi
+
+# Ghostty doesn't expose a terminal's TTY. Set a unique title on the TTY and ask Ghostty which
+# terminal has it, then put the old title back. A busy session redraws its title quickly, so retry.
+marker="cct-probe-$$-$RANDOM"
+found=""
+for attempt in 1 2 3 4 5 6; do
+  printf '\033]2;%s\007' "$marker" > "$tty"
+  sleep 0.1
+  found="$(osascript -e "tell application \"Ghostty\"
+    set matches to every terminal whose name is \"$marker\"
+    if matches is {} then return \"\"
+    return id of item 1 of matches
+  end tell")"
+  [ -n "$found" ] && break
+done
+[ -n "$found" ] || { echo "cct-probe: no Ghostty terminal found for $tty after $attempt attempts" >&2; exit 1; }
+
+# Claude's titles start with a status glyph and the session's title; rebuild an idle-looking one.
+printf '\033]2;%s\007' "✳ $(basename "$(jq -r .cwd "$state_file")")" > "$tty"
+
+jq --arg tid "$found" '. + {terminal_id: $tid}' "$state_file" > "$state_file.$$.tmp"
+mv "$state_file.$$.tmp" "$state_file"
+echo "$found"
