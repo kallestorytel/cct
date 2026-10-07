@@ -284,6 +284,8 @@ It only redraws the menu when something changes. It also:
 - marks a done session as idle when its tab is focused,
 - detects background work, shown as "monitoring".
 
+The dropdown icons are colored through SwiftBar's `sfconfig` parameter. SwiftBar's simpler `sfcolor` doesn't apply to `sfimage` icons.
+
 **`bin/cct-focus`** and **`bin/cct-probe`** find and focus a session's Ghostty tab.
 Ghostty's AppleScript doesn't expose a terminal's TTY. So cct-probe briefly sets a unique title on the session's TTY and asks Ghostty which terminal has that title.
 The terminal id is cached for later.
