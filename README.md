@@ -31,11 +31,11 @@ The icon is a status indicator. It never blinks or animates.
 | Requirement | Version | Why |
 |---|---|---|
 | macOS | 12 Monterey or later | SwiftBar's minimum |
-| [Homebrew](https://brew.sh) | any | Easiest way to install the rest |
-| [Ghostty](https://ghostty.org) | 1.3.0 or later | Its AppleScript support is used to find and focus tabs |
-| [SwiftBar](https://github.com/swiftbar/SwiftBar) | 2.x | Runs the menu bar plugin |
-| [jq](https://jqlang.org) | 1.6 or later | Reads and writes the session state files |
-| [Claude Code](https://code.claude.com) | a recent version with hooks | Reports session state through hooks |
+| [Homebrew](#homebrew) | any | Easiest way to install the rest |
+| [Ghostty](#ghostty) | 1.3.0 or later | Its AppleScript support is used to find and focus tabs |
+| [SwiftBar](#swiftbar) | 2.x | Runs the menu bar plugin |
+| [jq](#jq) | 1.6 or later | Reads and writes the session state files |
+| [Claude Code](#claude-code) | a recent version with hooks | Reports session state through hooks |
 
 No other tools are needed. The scripts run on the bash that ships with macOS.
 
@@ -45,19 +45,23 @@ Tested with macOS 26.3, Ghostty 1.3.1, SwiftBar 2.1.1, jq 1.8.1 and Claude Code 
 
 ### Homebrew
 
+Website: [brew.sh](https://brew.sh)
+
 Check if you have it:
 
 ```bash
 brew --version
 ```
 
-If not, install it with the command from [brew.sh](https://brew.sh):
+If not, install it:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 ### Ghostty
+
+Website: [ghostty.org](https://ghostty.org)
 
 ```bash
 brew install --cask ghostty
@@ -75,6 +79,8 @@ AppleScript must be enabled in Ghostty. It is by default.
 If your Ghostty config has `macos-applescript = false`, remove that line and restart Ghostty.
 
 ### SwiftBar
+
+Website: [github.com/swiftbar/SwiftBar](https://github.com/swiftbar/SwiftBar)
 
 ```bash
 brew install --cask swiftbar
@@ -94,6 +100,8 @@ defaults read com.ameba.SwiftBar PluginDirectory
 
 ### jq
 
+Website: [jqlang.org](https://jqlang.org)
+
 ```bash
 brew install jq
 jq --version
@@ -101,7 +109,9 @@ jq --version
 
 ### Claude Code
 
-See the [Claude Code docs](https://code.claude.com) to install it. Check your version with:
+Website: [code.claude.com](https://code.claude.com)
+
+Follow the install guide on the website. Check your version with:
 
 ```bash
 claude --version
