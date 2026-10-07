@@ -25,11 +25,8 @@ Sessions that were already running show up after their next prompt.
 
 ## Menu bar icon
 
-| Icon | Meaning |
-|---|---|
-| Orange + count | A session is waiting for you (permission prompt or question) |
-| Green + count | A session finished and you haven't looked at it yet |
-| Grey, no count | Nothing needs you |
+The number next to the icon counts sessions that need you: waiting for input (permission prompt or question) or finished and not yet looked at.
+No number means nothing needs you. The dropdown shows each session's status in color.
 
 The icon is a status indicator. It never blinks or animates.
 
@@ -37,17 +34,17 @@ A finished session counts as seen once you focus its tab, through the menu or by
 
 ## Customizing
 
-Create `~/.cct/config` and override any of these. Icons are [SF Symbol](https://developer.apple.com/sf-symbols/) names; browse them with `brew install --cask sf-symbols`.
+Create `~/.cct/config` and override any of these. `ICON` is an [SF Symbol](https://developer.apple.com/sf-symbols/) name; browse them with `brew install --cask sf-symbols`.
 
 ```bash
-ICON_IDLE=ipod.shuffle.gen1
-ICON_WAITING=ipod.shuffle.gen1
-ICON_DONE=ipod.shuffle.gen1
+ICON=ipod.shuffle.gen1
 COLOR_WAITING=#FF9500
 COLOR_DONE=#34C759
 COLOR_BUSY=#0A84FF
 COLOR_IDLE=#8E8E93
 ```
+
+The colors apply to the dropdown. The menu bar icon follows the system's menu bar color.
 
 Changes apply after `open -g swiftbar://refreshallplugins` or a SwiftBar restart.
 Set `CCT_CONFIG` to use a different file.

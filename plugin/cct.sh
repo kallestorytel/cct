@@ -17,9 +17,7 @@ TICK=0.6
 mkdir -p "$STATE_DIR"
 
 # Icons are SF Symbol names; colors are hex. Override any of these in ~/.cct/config.
-ICON_IDLE=ipod.shuffle.gen1
-ICON_WAITING=ipod.shuffle.gen1
-ICON_DONE=ipod.shuffle.gen1
+ICON=ipod.shuffle.gen1
 COLOR_WAITING=#FF9500
 COLOR_DONE=#34C759
 COLOR_BUSY=#0A84FF
@@ -82,18 +80,16 @@ sessions() {
 }
 
 render() {
-  local rows waiting done
+  local rows attention
   rows="$(sessions)"
-  waiting="$(grep -c $'\twaiting\t' <<<"$rows")"
-  done="$(grep -c $'\tdone\t' <<<"$rows")"
+  # Waiting and done both mean "go look", so the menu bar shows one count.
+  attention="$(grep -cE $'\t(waiting|done)\t' <<<"$rows")"
 
   echo "~~~"
-  if [ "$waiting" -gt 0 ]; then
-    echo "$waiting | sfimage=$ICON_WAITING sfcolor=$COLOR_WAITING"
-  elif [ "$done" -gt 0 ]; then
-    echo "$done | sfimage=$ICON_DONE sfcolor=$COLOR_DONE"
+  if [ "$attention" -gt 0 ]; then
+    echo "$attention | sfimage=$ICON"
   else
-    echo " | sfimage=$ICON_IDLE"
+    echo " | sfimage=$ICON"
   fi
   echo "---"
 
