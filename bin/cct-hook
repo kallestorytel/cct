@@ -5,6 +5,8 @@ set -euo pipefail
 
 STATE_DIR="${CCT_STATE_DIR:-$HOME/.cct/sessions}"
 mkdir -p "$STATE_DIR"
+# Claude Code ignores stderr from async hooks, so keep it somewhere we can read it.
+exec 2>>"$STATE_DIR/../hook.log"
 
 event="${1:?usage: cct-hook <start|prompt|tool|notify|stop|end>}"
 input="$(cat)"
@@ -41,21 +43,28 @@ current_status() {
 }
 
 record_identity() {
-  local pid tty
-  read -r pid tty < <(find_claude_process)
+  local found pid tty
+  found="$(find_claude_process)" || exit 1
+  read -r pid tty <<<"$found"
   update_state --arg sid "$session_id" --arg cwd "$(jq -r .cwd <<<"$input")" \
     --argjson pid "$pid" --arg tty "$tty" \
     '. + {session_id: $sid, cwd: $cwd, pid: $pid, tty: $tty, updated: $now}'
 }
 
+has_identity() {
+  [ -f "$state_file" ] && jq -e '.pid and .cwd and .tty' "$state_file" > /dev/null
+}
+
+# Sessions started before the hooks were installed never ran "start", and any event can come first.
+if [ "$event" != "end" ] && ! has_identity; then
+  record_identity
+fi
+
 case "$event" in
   start)
-    record_identity
     update_state '. + {status: "idle"}'
     ;;
   prompt)
-    # Sessions started before the hooks were installed never ran "start".
-    [ -f "$state_file" ] || record_identity
     update_state --arg prompt "$(jq -r '.prompt // ""' <<<"$input" | tr '\n' ' ' | cut -c1-60)" \
       '. + {status: "busy", prompt: $prompt, updated: $now}'
     ;;

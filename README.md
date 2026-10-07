@@ -44,6 +44,7 @@ Focusing a finished session through the menu marks it as seen.
   It caches the terminal id for later clicks.
 
 Set `CCT_STATE_DIR` to use a different state directory.
+Hook errors go to `hook.log` in the state directory's parent (default `~/.cct/hook.log`).
 
 ## Limitations
 

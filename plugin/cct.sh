@@ -28,7 +28,9 @@ prune() {
   local f pid
   for f in "$STATE_DIR"/*.json; do
     [ -e "$f" ] || continue
-    pid="$(jq -r '.pid // 0' "$f")"
+    pid="$(jq -r '.pid // empty' "$f" 2>/dev/null)"
+    # No pid yet means a hook is still recording identity. Leave it; sessions() skips it.
+    [ -n "$pid" ] || continue
     kill -0 "$pid" 2>/dev/null || rm -f "$f"
   done
 }
@@ -37,7 +39,8 @@ prune() {
 sessions() {
   cat "$STATE_DIR"/*.json 2>/dev/null | jq -rs '
     def rank: {waiting: 0, done: 1, busy: 2, idle: 3}[.status] // 4;
-    sort_by(rank, -.updated)[]
+    map(select(.session_id and .cwd and .status))
+    | sort_by(rank, -.updated)[]
     | [.session_id, .status, (.cwd | split("/") | last), (.prompt // ""), .updated] | @tsv'
 }
 
