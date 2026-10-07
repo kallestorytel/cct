@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>cct — Claude Code Tracker</xbar.title>
-# <xbar.version>v1.0.0</xbar.version>
+# <xbar.version>v1.0.1</xbar.version>
 # <xbar.author>Kalle Asad-Lundgren</xbar.author>
 # <xbar.author.github>kallestorytel</xbar.author.github>
 # <xbar.desc>Lists Claude Code sessions in Ghostty and shows which ones need you or are monitoring.</xbar.desc>
