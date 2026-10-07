@@ -55,6 +55,7 @@ Set `CCT_CONFIG` to use a different file.
   It records the cwd, the `claude` process pid and its TTY, and a status:
   `busy` → `waiting` (permission prompt) → `busy` → `done` (turn finished) → `idle` (seen).
 - **`plugin/cct.sh`** is a streamable SwiftBar plugin. It redraws the menu from the state files and removes sessions whose process has died.
+  It labels an idle or done session "monitoring" when its `claude` process still has background shells running.
 - **`bin/cct-focus`** finds the session's Ghostty tab and focuses it.
   Ghostty's AppleScript doesn't expose a terminal's TTY, so it writes a unique title to the TTY and asks Ghostty which terminal has that title.
   It caches the terminal id for later clicks.
@@ -63,6 +64,8 @@ Set `CCT_STATE_DIR` to use a different state directory.
 Hook errors go to `hook.log` in the state directory's parent (default `~/.cct/hook.log`).
 
 ## Limitations
+
+- "monitoring" in the dropdown is a heuristic. Claude Code has no hook for background tasks, so the plugin looks for shell processes that `claude` started. Background Bash commands show up the same way as Monitor watches.
 
 - Ghostty only.
 - Focusing a busy session can take a few tries internally, because Claude's spinner keeps rewriting the tab title.

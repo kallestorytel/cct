@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>cct — Claude Code sessions</xbar.title>
-# <xbar.desc>Lists Claude Code sessions in Ghostty and shows which ones need you.</xbar.desc>
+# <xbar.desc>Lists Claude Code sessions in Ghostty and shows which ones need you or are monitoring.</xbar.desc>
 # <xbar.dependencies>jq,ghostty</xbar.dependencies>
 # <swiftbar.type>streamable</swiftbar.type>
 # <swiftbar.hideAbout>true</swiftbar.hideAbout>
@@ -70,13 +70,21 @@ clear_seen() {
   done
 }
 
+# Pids of claude processes that have Bash or Monitor commands running. Claude runs those through a
+# shell that sources its shell snapshot. Outside a turn, that can only be background work.
+background_parents() {
+  ps -ax -o ppid=,command= | awk '/\/\.claude\/shell-snapshots\// { print $1 }' | sort -u | paste -sd, -
+}
+
 # One TSV row per session, most urgent first.
 sessions() {
-  cat "$STATE_DIR"/*.json 2>/dev/null | jq -rs '
+  cat "$STATE_DIR"/*.json 2>/dev/null | jq -rs --arg bg "$(background_parents)" '
     def rank: {waiting: 0, done: 1, busy: 2, idle: 3}[.status] // 4;
-    map(select(.session_id and .cwd and .status))
+    ($bg | split(",") | map(tonumber? // empty)) as $bg
+    | map(select(.session_id and .cwd and .status))
     | sort_by(rank, -.updated)[]
-    | [.session_id, .status, (.cwd | split("/") | last), (.prompt // ""), .updated] | @tsv'
+    | (.status != "busy" and (.pid as $p | $bg | index($p) != null)) as $monitoring
+    | [.session_id, .status, (.cwd | split("/") | last), (.prompt // ""), .updated, $monitoring] | @tsv'
 }
 
 render() {
@@ -97,15 +105,17 @@ render() {
     echo "No Claude sessions | color=gray"
     return
   fi
-  local sid status repo prompt updated icon color
-  while IFS=$'\t' read -r sid status repo prompt updated; do
+  local sid status repo prompt updated monitoring icon color label
+  while IFS=$'\t' read -r sid status repo prompt updated monitoring; do
     case "$status" in
       waiting) icon=exclamationmark.bubble.fill; color=$COLOR_WAITING ;;
       done)    icon=checkmark.circle.fill;       color=$COLOR_DONE ;;
       busy)    icon=ellipsis.circle;             color=$COLOR_BUSY ;;
       *)       icon=circle;                      color=$COLOR_IDLE ;;
     esac
-    echo "$repo  ·  $status $(age "$updated") | sfimage=$icon sfcolor=$color bash=$FOCUS param1=$sid terminal=false"
+    label="$status $(age "$updated")"
+    [ "$monitoring" = "true" ] && label="$label  ·  monitoring"
+    echo "$repo  ·  $label | sfimage=$icon sfcolor=$color bash=$FOCUS param1=$sid terminal=false"
     [ -n "$prompt" ] && echo "-- ${prompt//|/¦} | size=11 color=gray"
   done <<<"$rows"
 }
