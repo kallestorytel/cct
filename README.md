@@ -291,6 +291,7 @@ Each file holds the session's folder, the pid and TTY of its `claude` process, i
 
 Hooks run without a terminal, so it finds the `claude` process by walking up its parent processes.
 Errors go to `~/.cct/hook.log`, because Claude Code discards the output of background hooks.
+Hooks of one session can run at the same time, so every write to a state file holds a shared lock, `~/.cct/state.lock`.
 
 **`plugin/cct.sh`** is a streamable SwiftBar plugin. It runs continuously and checks the state files about twice a second.
 It only redraws the menu when something changes. It also:

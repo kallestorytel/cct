@@ -37,6 +37,10 @@ done
 # Claude's titles start with a status glyph and the session's title; rebuild an idle-looking one.
 printf '\033]2;%s\007' "✳ $(basename "$(jq -r .cwd "$state_file")")" > "$tty"
 
+# Hooks write this file concurrently. Take the shared lock (see cct-hook) for the read-modify-write.
+exec 9>"$STATE_DIR/../state.lock"
+lockf -s -t 5 9 || { echo "cct-probe: timed out waiting for the state lock" >&2; exit 1; }
+[ -f "$state_file" ] || { echo "cct-probe: session $session_id ended while probing" >&2; exit 1; }
 jq --arg tid "$found" '. + {terminal_id: $tid}' "$state_file" > "$state_file.$$.tmp"
 mv "$state_file.$$.tmp" "$state_file"
 echo "$found"

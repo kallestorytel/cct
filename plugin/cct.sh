@@ -69,7 +69,14 @@ clear_seen() {
     [ "$(jq -r '.status // empty' "$f" 2>/dev/null)" = "done" ] || continue
     sid="$(jq -r .session_id "$f")"
     if [ "$("$BIN/cct-probe" "$sid" 2>/dev/null)" = "$focused" ]; then
-      jq 'if .status == "done" then .status = "idle" else . end' "$f" > "$f.$$.tmp" && mv "$f.$$.tmp" "$f"
+      # Under the shared lock (see cct-hook), so a hook writing at the same time isn't lost.
+      # The subshell releases the lock when it exits.
+      (
+        exec 9>"$STATE_DIR/../state.lock"
+        lockf -s -t 5 9 || { echo "cct: timed out waiting for the state lock" >&2; exit 1; }
+        [ -f "$f" ] || exit 0
+        jq 'if .status == "done" then .status = "idle" else . end' "$f" > "$f.$$.tmp" && mv "$f.$$.tmp" "$f"
+      )
     fi
   done
 }
