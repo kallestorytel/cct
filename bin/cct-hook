@@ -19,6 +19,11 @@ session_id="$(jq -r '.session_id // empty' <<<"$input")"
 state_file="$STATE_DIR/$session_id.json"
 now="$(date +%s)"
 
+# Hooks of one session run concurrently, and cct-probe and the plugin write the same files.
+# Hold the shared lock for the whole run so read-modify-writes can't interleave.
+exec 9>"$STATE_DIR/../state.lock"
+lockf -s -t 5 9 || { echo "cct-hook: timed out waiting for the state lock ($event, $session_id)" >&2; exit 1; }
+
 # Hooks run without a controlling TTY. Walk up to the nearest ancestor that has one: the claude process.
 find_claude_process() {
   local pid=$PPID tty
@@ -38,8 +43,10 @@ find_claude_process() {
 update_state() {
   local current='{}'
   [ -f "$state_file" ] && current="$(cat "$state_file")"
-  jq --argjson now "$now" "$@" <<<"$current" > "$state_file.tmp"
-  mv "$state_file.tmp" "$state_file"
+  # An empty or corrupt file would make jq print nothing, and stay empty forever. Start over instead.
+  jq -e 'type == "object"' <<<"$current" > /dev/null 2>&1 || current='{}'
+  jq --argjson now "$now" "$@" <<<"$current" > "$state_file.$$.tmp"
+  mv "$state_file.$$.tmp" "$state_file"
 }
 
 current_status() {
